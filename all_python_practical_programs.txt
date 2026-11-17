@@ -1,0 +1,243 @@
+====================================================================
+PYTHON PRACTICAL PROGRAMS COLLECTION (SHORT & EASY VERSIONS)
+====================================================================
+
+--------------------------------------------------------------------
+1. PRIME NUMBER CHECKER
+--------------------------------------------------------------------
+num = int(input("Enter a number: "))
+
+if num <= 1:
+    prime = False
+else:
+    prime = True
+    for i in range(2, int(num ** 0.5) + 1):
+        if num % i == 0:
+            prime = False
+            break
+
+if prime:
+    print(num, "is a prime number")
+else:
+    print(num, "is not a prime number")
+
+
+--------------------------------------------------------------------
+2. FIBONACCI SEQUENCE (ITERATIVE APPROACH)
+--------------------------------------------------------------------
+n = int(input("Enter number of terms: "))
+a, b = 0, 1
+
+if n <= 0:
+    print("Please enter a positive integer.")
+else:
+    print("Fibonacci Sequence:")
+    for _ in range(n):
+        print(a, end=" ")
+        a, b = b, a + b
+
+
+--------------------------------------------------------------------
+3. STRING SLICING OPERATIONS
+--------------------------------------------------------------------
+text = "PYTHON PROGRAMMING"
+
+print("Original:", text)
+print("First 6 chars [0:6]:", text[0:6])
+print("From index 7 [7:]:", text[7:])
+print("Last 11 chars [-11:]:", text[-11:])
+print("Every 2nd char [::2]:", text[::2])
+print("Reversed [::-1]:", text[::-1])
+
+
+--------------------------------------------------------------------
+4. LIST, TUPLE, AND DICTIONARY WITH BUILT-IN FUNCTIONS
+--------------------------------------------------------------------
+# List (Mutable)
+marks = [85, 92, 78, 90]
+marks.append(88)
+marks.sort()
+print("List:", marks, "| Len:", len(marks), "| Max:", max(marks), "| Sum:", sum(marks))
+
+# Tuple (Immutable)
+codes = (101, 105, 101, 102)
+print("Tuple:", codes, "| Min:", min(codes), "| Count of 101:", codes.count(101))
+
+# Dictionary (Key-Value)
+student = {"name": "Aarav", "age": 20}
+student["grade"] = "A"
+print("Dict:", student, "| Keys:", list(student.keys()), "| Get:", student.get("name"))
+
+
+--------------------------------------------------------------------
+5. FILE HANDLING (CREATE, WRITE, READ, APPEND)
+--------------------------------------------------------------------
+# 1. Create & Write
+with open("sample.txt", "w") as f:
+    f.write("Hello Python!\n")
+
+# 2. Append
+with open("sample.txt", "a") as f:
+    f.write("Appending new line.\n")
+
+# 3. Read
+with open("sample.txt", "r") as f:
+    print(f.read())
+
+
+--------------------------------------------------------------------
+6. STUDENT DETAILS, PERCENTAGE & GRADE USING FUNCTIONS
+--------------------------------------------------------------------
+def calculate_grade(marks):
+    total = sum(marks)
+    percentage = total / len(marks)
+    if percentage >= 75:
+        grade = "Distinction"
+    elif percentage >= 60:
+        grade = "First Class"
+    elif percentage >= 40:
+        grade = "Pass"
+    else:
+        grade = "Fail"
+    return total, percentage, grade
+
+name = input("Enter Student Name: ")
+marks = [80, 75, 90, 85]
+total, pct, grade = calculate_grade(marks)
+print(f"Name: {name} | Total: {total} | Percentage: {pct:.2f}% | Grade: {grade}")
+
+
+--------------------------------------------------------------------
+7. SEARCHING (LINEAR SEARCH) AND SORTING (BUBBLE SORT)
+--------------------------------------------------------------------
+def linear_search(arr, target):
+    for i in range(len(arr)):
+        if arr[i] == target:
+            return i
+    return -1
+
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n - 1):
+        for j in range(n - 1 - i):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr
+
+nums = [42, 15, 88, 7, 23]
+print("Search 88 -> Index:", linear_search(nums, 88))
+print("Sorted List:", bubble_sort(nums))
+
+
+--------------------------------------------------------------------
+8. LAMBDA FUNCTION AND CUSTOM MODULE
+--------------------------------------------------------------------
+# --- File 1: my_module.py ---
+# def greet(name):
+#     return f"Hello, {name}!"
+
+# --- File 2: main.py ---
+# import my_module
+# print(my_module.greet("Aarav"))
+
+# Lambda Function Examples
+square = lambda x: x * x
+add = lambda a, b: a + b
+nums = [1, 2, 3, 4, 5]
+evens = list(filter(lambda n: n % 2 == 0, nums))
+
+print("Square of 5:", square(5))
+print("Sum of 4 & 6:", add(4, 6))
+print("Even numbers:", evens)
+
+
+--------------------------------------------------------------------
+9. CLASSES AND OBJECTS
+--------------------------------------------------------------------
+class Student:
+    def __init__(self, name, roll_no):
+        self.name = name
+        self.roll_no = roll_no
+
+    def display(self):
+        print(f"Name: {self.name}, Roll No: {self.roll_no}")
+
+s1 = Student("Aarav", 101)
+s2 = Student("Priya", 102)
+s1.display()
+s2.display()
+
+
+--------------------------------------------------------------------
+10. INHERITANCE
+--------------------------------------------------------------------
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+class Student(Person):
+    def __init__(self, name, age, roll_no):
+        super().__init__(name, age)
+        self.roll_no = roll_no
+
+    def show_info(self):
+        print(f"Name: {self.name}, Age: {self.age}, Roll No: {self.roll_no}")
+
+s1 = Student("James", 22, "123")
+s1.show_info()
+
+
+--------------------------------------------------------------------
+11. METHOD OVERLOADING (USING DEFAULT ARGUMENTS & *ARGS)
+--------------------------------------------------------------------
+class Calculator:
+    def area(self, a, b=None):
+        if b is not None:
+            return a * b      # Rectangle
+        return 3.14 * a * a   # Circle
+
+    def add(self, *numbers):
+        return sum(numbers)
+
+calc = Calculator()
+print("Circle Area:", calc.area(5))
+print("Rectangle Area:", calc.area(5, 4))
+print("Add 3 numbers:", calc.add(10, 20, 30))
+
+
+--------------------------------------------------------------------
+12. METHOD OVERRIDING
+--------------------------------------------------------------------
+class Bank:
+    def get_interest_rate(self):
+        return 5.0
+
+class SBI(Bank):
+    def get_interest_rate(self):
+        return 6.5
+
+class HDFC(Bank):
+    def get_interest_rate(self):
+        return 7.2
+
+print("Bank Rate:", Bank().get_interest_rate(), "%")
+print("SBI Rate :", SBI().get_interest_rate(), "%")
+print("HDFC Rate:", HDFC().get_interest_rate(), "%")
+
+
+--------------------------------------------------------------------
+13. EXCEPTION HANDLING
+--------------------------------------------------------------------
+try:
+    num1 = int(input("Enter numerator: "))
+    num2 = int(input("Enter denominator: "))
+    result = num1 / num2
+except ZeroDivisionError:
+    print("Error: Cannot divide by zero!")
+except ValueError:
+    print("Error: Please enter valid numbers!")
+else:
+    print("Result:", result)
+finally:
+    print("Program execution finished.")
