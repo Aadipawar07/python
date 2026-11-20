@@ -1,0 +1,296 @@
+# BCA-DSE-356(A) Lab on Artificial Intelligence - All Practicals (Code Only)
+
+
+######################################################################
+# Practical 1: Breadth-First Search (BFS) for graph traversal
+######################################################################
+
+from collections import deque
+
+graph = {'A': ['B', 'C'], 'B': ['D', 'E'], 'C': ['F'],
+         'D': [], 'E': ['F'], 'F': []}
+
+def bfs(start):
+    visited = [start]
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()          # take from the front
+        print(node, end=" ")
+        for n in graph[node]:
+            if n not in visited:
+                visited.append(n)
+                queue.append(n)         # add to the back
+
+bfs('A')
+
+
+######################################################################
+# Practical 2: Depth-First Search (DFS) for graph traversal
+######################################################################
+
+graph = {'A': ['B', 'C'], 'B': ['D', 'E'], 'C': ['F'],
+         'D': [], 'E': ['F'], 'F': []}
+
+def dfs(node, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(node)
+    print(node, end=" ")
+    for n in graph[node]:
+        if n not in visited:
+            dfs(n, visited)             # go deeper
+
+dfs('A')
+
+
+######################################################################
+# Practical 3: 8-Puzzle Problem using state-space search
+######################################################################
+
+from collections import deque
+
+goal = "123456780"
+
+def neighbors(s):
+    i = s.index('0')
+    r, c = divmod(i, 3)
+    result = []
+    for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+        nr, nc = r + dr, c + dc
+        if 0 <= nr < 3 and 0 <= nc < 3:
+            j = nr * 3 + nc
+            l = list(s)
+            l[i], l[j] = l[j], l[i]     # slide the tile
+            result.append("".join(l))
+    return result
+
+def solve(start):
+    queue = deque([(start, [start])])
+    visited = {start}
+    while queue:
+        state, path = queue.popleft()
+        if state == goal:
+            return path
+        for n in neighbors(state):
+            if n not in visited:
+                visited.add(n)
+                queue.append((n, path + [n]))
+
+path = solve("123406758")
+print("Moves:", len(path) - 1)
+for s in path:
+    for i in range(0, 9, 3):
+        print(s[i:i+3])
+    print()
+
+
+######################################################################
+# Practical 4: Monkey and Banana Problem
+######################################################################
+
+from collections import deque
+
+places = ['door', 'window', 'center']
+start = ('door', 'window', False, False)   # monkey, box, on_box, has_banana
+
+def moves(state):
+    m, b, on, has = state
+    result = []
+    if not on:
+        for p in places:
+            if p != m:
+                result.append((f"Walk to {p}", (p, b, on, has)))
+                if m == b:
+                    result.append((f"Push box to {p}", (p, p, on, has)))
+        if m == b:
+            result.append(("Climb on box", (m, b, True, has)))
+    elif m == 'center':
+        result.append(("Grab banana", (m, b, on, True)))
+    return result
+
+queue = deque([(start, [])])
+seen = {start}
+while queue:
+    state, plan = queue.popleft()
+    if state[3]:                              # monkey has the banana
+        for i, step in enumerate(plan, 1):
+            print(i, step)
+        break
+    for action, new in moves(state):
+        if new not in seen:
+            seen.add(new)
+            queue.append((new, plan + [action]))
+
+
+######################################################################
+# Practical 5: Hill Climbing Algorithm
+######################################################################
+
+import random
+
+def f(x):
+    return -(x - 3) ** 2 + 9
+
+x = random.randint(-10, 10)
+step = 0.1
+print("Start:", x)
+
+while True:
+    best = max([x - step, x + step], key=f)   # best neighbour
+    if f(best) <= f(x):                       # no improvement -> peak
+        break
+    x = best
+
+print("Peak at x =", round(x, 2), " f(x) =", round(f(x), 2))
+
+
+######################################################################
+# Practical 6: Best-First Search Algorithm
+######################################################################
+
+import heapq
+
+graph = {'S': ['A', 'B'], 'A': ['C', 'D'], 'B': ['E', 'F'],
+         'C': [], 'D': [], 'E': ['G'], 'F': [], 'G': []}
+h = {'S': 7, 'A': 6, 'B': 2, 'C': 4, 'D': 5, 'E': 1, 'F': 3, 'G': 0}
+
+def best_first(start, goal):
+    pq = [(h[start], start, [start])]         # (heuristic, node, path)
+    visited = set()
+    while pq:
+        _, node, path = heapq.heappop(pq)     # smallest h first
+        if node == goal:
+            return path
+        if node in visited:
+            continue
+        visited.add(node)
+        for n in graph[node]:
+            heapq.heappush(pq, (h[n], n, path + [n]))
+
+print("Path:", best_first('S', 'G'))
+
+
+######################################################################
+# Practical 7: A* Algorithm
+######################################################################
+
+import heapq
+
+graph = {'S': {'A': 1, 'B': 4}, 'A': {'B': 2, 'C': 5, 'D': 12},
+         'B': {'C': 2}, 'C': {'G': 3}, 'D': {'G': 3}, 'G': {}}
+h = {'S': 7, 'A': 6, 'B': 4, 'C': 2, 'D': 3, 'G': 0}
+
+def astar(start, goal):
+    pq = [(h[start], 0, start, [start])]      # (f, g, node, path)
+    visited = set()
+    while pq:
+        f, g, node, path = heapq.heappop(pq)
+        if node == goal:
+            return path, g
+        if node in visited:
+            continue
+        visited.add(node)
+        for n, cost in graph[node].items():
+            heapq.heappush(pq, (g + cost + h[n], g + cost, n, path + [n]))
+
+path, cost = astar('S', 'G')
+print("Path:", path, " Cost:", cost)
+
+
+######################################################################
+# Practical 8: AO* Algorithm
+######################################################################
+
+# Each option is an AND-group of children; options of a node are OR choices
+graph = {'A': [['B'], ['C', 'D']],            # A = B  OR  (C AND D)
+         'B': [['E', 'F']],
+         'C': [['G']], 'D': [['H']],
+         'E': [], 'F': [], 'G': [], 'H': []}
+h = {'E': 4, 'F': 3, 'G': 2, 'H': 1}          # leaf costs, each edge costs 1
+
+def ao_star(node):
+    if not graph[node]:                       # leaf node
+        return h[node], None
+    best_cost, best_option = float('inf'), None
+    for option in graph[node]:
+        cost = sum(1 + ao_star(c)[0] for c in option)
+        if cost < best_cost:
+            best_cost, best_option = cost, option
+    return best_cost, best_option
+
+def show(node):
+    option = ao_star(node)[1]
+    if option:
+        print(node, "->", " AND ".join(option))
+        for c in option:
+            show(c)
+
+show('A')
+print("Total cost:", ao_star('A')[0])
+
+
+######################################################################
+# Practical 9: Simple Knowledge Base using Facts and Rules
+######################################################################
+
+# Facts: (parent, child)
+parent = [("Ram", "Shyam"), ("Shyam", "Geeta"), ("Shyam", "Mohan")]
+
+# Rules
+def is_parent(x, y):
+    return (x, y) in parent
+
+def is_grandparent(x, z):
+    return any(is_parent(x, y) and is_parent(y, z) for _, y in parent)
+
+def is_sibling(x, y):
+    return x != y and any(is_parent(p, x) and is_parent(p, y) for p, _ in parent)
+
+# Queries
+print("Is Ram parent of Shyam?      ", is_parent("Ram", "Shyam"))
+print("Is Ram grandparent of Geeta? ", is_grandparent("Ram", "Geeta"))
+print("Are Geeta and Mohan siblings?", is_sibling("Geeta", "Mohan"))
+print("Is Geeta grandparent of Ram? ", is_grandparent("Geeta", "Ram"))
+
+
+######################################################################
+# Practical 10: Forward Chaining for rule-based inference
+######################################################################
+
+rules = [(["A", "B"], "C"),       # A and B -> C
+         (["C"], "D"),            # C -> D
+         (["D", "E"], "F")]       # D and E -> F
+facts = {"A", "B", "E"}
+goal = "F"
+
+changed = True
+while changed:
+    changed = False
+    for premises, conclusion in rules:
+        if conclusion not in facts and all(p in facts for p in premises):
+            facts.add(conclusion)
+            print(premises, "=>", conclusion)
+            changed = True
+
+print("Goal reached!" if goal in facts else "Goal cannot be proved.")
+
+
+######################################################################
+# Practical 11: Backward Chaining for goal-based reasoning
+######################################################################
+
+rules = [(["A", "B"], "C"),
+         (["C"], "D"),
+         (["D", "E"], "F")]
+facts = {"A", "B", "E"}
+
+def prove(goal, depth=0):
+    print("  " * depth + "Proving", goal)
+    if goal in facts:
+        return True
+    for premises, conclusion in rules:
+        if conclusion == goal and all(prove(p, depth + 1) for p in premises):
+            return True
+    return False
+
+print("Result:", prove("F"))
